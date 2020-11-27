@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { Switch, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import OrderPage from "./pages/OrderPage";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { CHANGE_LOGIN_STATUS } from "./redux/actions/action-type";
 
 function App() {
+  const isLoginPersist = localStorage.getItem("isUserLogin");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isLoginPersist === "true") {
+      dispatch({ type: CHANGE_LOGIN_STATUS, payload: true });
+    } else {
+      dispatch({ type: CHANGE_LOGIN_STATUS, payload: false });
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Switch>
+      <ProtectedRoute path="/order-page" redirectTo="/" exact>
+        <OrderPage />
+      </ProtectedRoute>
+      <Route path="/" exact>
+        <LoginPage />
+      </Route>
+    </Switch>
   );
 }
 
